@@ -19,26 +19,24 @@ let computeBounds row col =
 let freeSlot = rnd.Next(1, 16)
 
 [<ReactComponent>]
-let Tile number clickable =
-
+let Tile number =
     Html.div [
-        prop.className "flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl text-3xl select-none"
-        prop.style [
-            if clickable then
-                style.cursor.pointer
-        ]
+        prop.className "flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl font-bold text-4xl select-none"
         prop.text (string number)
     ]
 
 let generateTiles = 
-    [1 .. 15]
-    |> List.map (fun i -> 
-        Tile (string i) true
-    )    
+    [1 .. 15] 
+    |> List.sortBy (fun _ -> rnd.Next())  
 
 [<ReactComponent(true)>]
 let Game () = 
     let mutable index = 0
+    let freeRow, freeCol = computeRow freeSlot
+    let freeBounds = computeBounds freeRow freeCol
+    printfn "free cell %i" freeSlot
+    printfn "clickables: %A" freeBounds
+
     Html.div [
         prop.className "flex h-screen w-full items-center justify-center"
         prop.children [
@@ -50,14 +48,20 @@ let Game () =
                         prop.children [
                             for i in 1 .. 16 do
                                 let row, col = computeRow i
-                                let bounds = computeBounds row col
+                                let bounds = computeBounds row col 
+                                let isClickable = List.exists (fun (r,c) ->  r = row && c = col) freeBounds  
+
                                 Html.div [
                                     prop.className "bg-teal-800 flex rounded-xl h-24 w-24 box-border"
-                                    prop.onClick (fun _ -> printfn "Clicked %A" bounds)
+                                    if isClickable then
+                                        prop.className "cursor-pointer"
+                                        prop.onClick (fun _ -> printfn "Clicked %A" bounds)
                                     // prop.text (sprintf "%i = (%i, %i)" i row col)
-                                    if i <> freeSlot then
-                                        generateTiles.[index] |> prop.children
-                                        index <- index + 1
+                                    prop.children [
+                                        if i <> freeSlot then
+                                            Tile generateTiles.[index] 
+                                            index <- index + 1
+                                    ]
                                 ] 
                         ]
                     ]
