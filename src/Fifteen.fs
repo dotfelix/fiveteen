@@ -49,10 +49,12 @@ let initialState  =
         let pos, _ = Seq.find (fun (p, tag) -> tag = "16") slots
         { Slots = slots; FreeSlot = pos}
 
+let slotSelected oldState newPosition = 
+    { oldState with FreeSlot = newPosition}
+
     
 [<ReactComponent(true)>]
-let Game () = 
-    let emptySlot, setEmptySlot = React.useState freeSlot
+let Game () =  
     let appState, setAppState = React.useStateWithUpdater initialState
     
     Html.div [
@@ -66,16 +68,16 @@ let Game () =
                         prop.children [ 
                             for slot in appState.Slots do
                                 let pos, title = slot
-                                let clickableSlots = computeBounds pos.X pos.Y
-                                printfn "title %s, bound %A" title clickableSlots
+                                let clickableSlots = computeBounds pos.X pos.Y 
                                 let isClickable = List.exists (fun (r,c) ->  r = pos.X && c = pos.Y) clickableSlots  
                                 Html.div [
                                     prop.className "bg-teal-800 flex rounded-xl h-24 w-24 box-border"
                                     if isClickable then
                                         prop.className "cursor-pointer"
-                                        prop.onClick (fun _ ->  
-                                            printfn "value %s, pos %A" title pos
-                                        ) 
+                                        prop.onClick (fun _ -> 
+                                            setAppState(fun prev -> 
+                                                slotSelected prev pos)
+                                        )
                                     prop.children [ 
                                         if appState.FreeSlot <> pos then
                                             Tile title
