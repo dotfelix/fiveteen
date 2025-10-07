@@ -29,14 +29,14 @@ let generateTiles =
     [1 .. 15] 
     |> List.sortBy (fun _ -> rnd.Next())  
 
+
+let mutable index = 0
+
+    
 [<ReactComponent(true)>]
 let Game () = 
-    let mutable index = 0
-    let freeRow, freeCol = computeRow freeSlot
-    let freeBounds = computeBounds freeRow freeCol
-    printfn "free cell %i" freeSlot
-    printfn "clickables: %A" freeBounds
-
+    let emptySlot, setEmptySlot = React.useState (rnd.Next(1, 16))
+    
     Html.div [
         prop.className "flex h-screen w-full items-center justify-center"
         prop.children [
@@ -46,6 +46,10 @@ let Game () =
                     Html.div [
                         prop.className "grid grid-cols-4 gap-2"
                         prop.children [
+                            index <- 0
+                            let freeRow, freeCol = computeRow emptySlot
+                            let freeBounds = computeBounds freeRow freeCol
+                            printfn "free bounds: %A" freeBounds
                             for i in 1 .. 16 do
                                 let row, col = computeRow i
                                 let bounds = computeBounds row col 
@@ -55,10 +59,14 @@ let Game () =
                                     prop.className "bg-teal-800 flex rounded-xl h-24 w-24 box-border"
                                     if isClickable then
                                         prop.className "cursor-pointer"
-                                        prop.onClick (fun _ -> printfn "Clicked %A" bounds)
+                                        prop.onClick (fun _ -> 
+                                            // printfn "Clicked %A" bounds
+                                            printfn "Clicked %i" i
+                                            setEmptySlot i
+                                        )
                                     // prop.text (sprintf "%i = (%i, %i)" i row col)
                                     prop.children [
-                                        if i <> freeSlot then
+                                        if i <> emptySlot then
                                             Tile generateTiles.[index] 
                                             index <- index + 1
                                     ]
