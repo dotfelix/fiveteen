@@ -31,14 +31,8 @@ let Tile number =
         prop.text (string number)
     ]
 
-let generateTiles = 
-    [1 .. 16] 
-    |> List.sortBy (fun _ -> rnd.Next())  
-
-let mutable index = 0
-
 let initialState  =
-    let tags = generateTiles
+    let tags = [1 .. 16] |> List.sortBy (fun _ -> rnd.Next()) 
     [ 
         for x in 0 .. 3 do 
         for y in 0 .. 3 do
@@ -86,8 +80,7 @@ let Game () =
                                     prop.className "bg-teal-800 flex rounded-xl h-24 w-24 box-border"
                                     if isClickable then
                                         prop.className "cursor-pointer"
-                                        prop.onClick (fun _ -> 
-                                            printfn "%A" slot
+                                        prop.onClick (fun _ ->  
                                             setAppState(fun prev -> 
                                                 slotSelected prev slot)
                                         )
