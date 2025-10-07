@@ -3,6 +3,12 @@ module Fifteen
 open System
 open Feliz
 
+type Position = {X: int; Y:int}
+
+type Slot = Position * string
+
+type AppState = { Slots: Slot list; FreeSlot: Position }
+
 let rnd = Random()
 
 let computeRow index =
