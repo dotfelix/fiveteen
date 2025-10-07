@@ -7,12 +7,9 @@ type Position = {X: int; Y:int}
 
 type Slot = Position * string
 
-type AppState = { Slots: Slot list; FreeSlot: Position }
+type AppState = { Slots: Slot list; FreeSlot: Position; Moves: int }
 
 let rnd = Random()
-
-let computeRow index =
-    int(Math.Floor(float(index - 1) / 4.0)), (index - 1) % 4
 
 let computeBounds row col =
     [
@@ -40,8 +37,8 @@ let initialState  =
     ]
     |> List.mapi (fun i pos -> pos, string(List.item i tags) )
     |> fun slots ->
-        let pos, _ = Seq.find (fun (p, tag) -> tag = "16") slots
-        { Slots = slots; FreeSlot = pos}
+        let pos, _ = Seq.find (fun (_, tag) -> tag = "16") slots
+        { Slots = slots; FreeSlot = pos; Moves = 0}
 
 let slotSelected (oldState : AppState) (selectedSlot: Slot) =
     let oldP, OldT = selectedSlot
@@ -55,6 +52,7 @@ let slotSelected (oldState : AppState) (selectedSlot: Slot) =
     {oldState with 
         FreeSlot = oldP
         Slots = newSlot
+        Moves = oldState.Moves + 1
         }
 
     
@@ -63,11 +61,24 @@ let Game () =
     let appState, setAppState = React.useStateWithUpdater initialState
     
     Html.div [
-        prop.className "flex h-screen w-full items-center justify-center"
+        prop.className "flex flex-col h-screen w-full items-center justify-center"
         prop.children [
             Html.div [
-                prop.className "bg-[rgba(0,119,24,0.29)] flex p-6 rounded-lg"
-                prop.children [ 
+                prop.className "flex flex-col items-center font-bold bg-blue-200 p-4 rounded-lg"
+                prop.children [
+                    Html.div [
+                        prop.className "uppercase text-2xl"
+                        prop.text "Moves"
+                    ]
+                    Html.div [
+                        prop.className "text-3xl"
+                        prop.text (sprintf "%i" appState.Moves)
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "bg-[rgba(0,119,24,0.29)] flex p-6 rounded-lg m-4"
+                prop.children [  
                     Html.div [
                         prop.className "grid grid-cols-4 gap-2"
                         prop.children [
