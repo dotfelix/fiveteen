@@ -32,32 +32,28 @@ let Tile number =
     ]
 
 let generateTiles = 
-    [1 .. 15] 
+    [1 .. 16] 
     |> List.sortBy (fun _ -> rnd.Next())  
 
-let newTile (values: int list) empty picked = 
-    let mutable idx = 0
-    [1 .. 16]
-    |> List.mapi(fun i v -> 
-        let va = 
-            if i = empty then 
-                0
-            else
-                let value = values.[idx]
-                idx <- idx + 1
-                value 
-        printfn "%i" va
-        va
-    )
-
-newTile generateTiles freeSlot 0 |> ignore
-
 let mutable index = 0
+
+let initialState  =
+    let tags = generateTiles
+    [ 
+        for x in 0 .. 3 do 
+        for y in 0 .. 3 do
+        yield { X = x; Y = y}
+    ]
+    |> List.mapi (fun i pos -> pos, string(List.item i tags) )
+    |> fun slots ->
+        let pos, _ = Seq.find (fun (p, tag) -> tag = "16") slots
+        { Slots = slots; FreeSlot = pos}
 
     
 [<ReactComponent(true)>]
 let Game () = 
-    let emptySlot, setEmptySlot = React.useState (freeSlot)
+    let emptySlot, setEmptySlot = React.useState freeSlot
+    let appState, setAppState = React.useStateWithUpdater initialState
     
     Html.div [
         prop.className "flex h-screen w-full items-center justify-center"
@@ -67,33 +63,25 @@ let Game () =
                 prop.children [ 
                     Html.div [
                         prop.className "grid grid-cols-4 gap-2"
-                        prop.children [
-                            index <- 0
-                            let freeRow, freeCol = computeRow emptySlot
-                            let freeBounds = computeBounds freeRow freeCol
-                            printfn "free: %i, %i" freeRow freeCol
-                            for i in 1 .. 16 do
-                                let row, col = computeRow i 
-                                let value = if i = emptySlot then 0 else generateTiles.[index] 
-                                let isClickable = List.exists (fun (r,c) ->  r = row && c = col) freeBounds  
-
-                                printfn "%i, %i - %i" row col value
+                        prop.children [ 
+                            for slot in appState.Slots do
+                                let pos, title = slot
+                                let clickableSlots = computeBounds pos.X pos.Y
+                                printfn "title %s, bound %A" title clickableSlots
+                                let isClickable = List.exists (fun (r,c) ->  r = pos.X && c = pos.Y) clickableSlots  
                                 Html.div [
                                     prop.className "bg-teal-800 flex rounded-xl h-24 w-24 box-border"
                                     if isClickable then
                                         prop.className "cursor-pointer"
-                                        prop.onClick (fun _ -> 
-                                            // printfn "Clicked %A" bounds
-                                            printfn "clicked %i, value %i" i value
-                                            setEmptySlot i
-                                        )
-                                    // prop.text (sprintf "%i = (%i, %i)" i row col)
-                                    prop.children [
-                                        if i <> emptySlot then
-                                            Tile value
-                                            index <- index + 1
+                                        prop.onClick (fun _ ->  
+                                            printfn "value %s, pos %A" title pos
+                                        ) 
+                                    prop.children [ 
+                                        if appState.FreeSlot <> pos then
+                                            Tile title
                                     ]
                                 ] 
+                                
                         ]
                     ]
                 ]
