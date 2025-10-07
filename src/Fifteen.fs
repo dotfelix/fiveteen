@@ -49,8 +49,19 @@ let initialState  =
         let pos, _ = Seq.find (fun (p, tag) -> tag = "16") slots
         { Slots = slots; FreeSlot = pos}
 
-let slotSelected oldState newPosition = 
-    { oldState with FreeSlot = newPosition}
+let slotSelected (oldState : AppState) (selectedSlot: Slot) =
+    let oldP, OldT = selectedSlot
+    let newSlot = 
+        oldState.Slots 
+        |> List.map (fun s -> 
+            let p, t = s 
+            if p.X = oldState.FreeSlot.X && p.Y = oldState.FreeSlot.Y then p, OldT
+            else s
+        ) 
+    {oldState with 
+        FreeSlot = oldP
+        Slots = newSlot
+        }
 
     
 [<ReactComponent(true)>]
@@ -65,18 +76,20 @@ let Game () =
                 prop.children [ 
                     Html.div [
                         prop.className "grid grid-cols-4 gap-2"
-                        prop.children [ 
+                        prop.children [
+                            let clickableSlots = computeBounds appState.FreeSlot.X appState.FreeSlot.Y
+
                             for slot in appState.Slots do
                                 let pos, title = slot
-                                let clickableSlots = computeBounds pos.X pos.Y 
                                 let isClickable = List.exists (fun (r,c) ->  r = pos.X && c = pos.Y) clickableSlots  
                                 Html.div [
                                     prop.className "bg-teal-800 flex rounded-xl h-24 w-24 box-border"
                                     if isClickable then
                                         prop.className "cursor-pointer"
                                         prop.onClick (fun _ -> 
+                                            printfn "%A" slot
                                             setAppState(fun prev -> 
-                                                slotSelected prev pos)
+                                                slotSelected prev slot)
                                         )
                                     prop.children [ 
                                         if appState.FreeSlot <> pos then
