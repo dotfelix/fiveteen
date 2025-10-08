@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+.tile {
+    @apply flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl font-bold text-4xl select-none ;
+}
+
+.moves {
+    @apply flex flex-col items-center font-bold bg-blue-200 px-6 py-1 rounded-lg select-none;
+}
+
+.title {
+    @apply w-80 font-bold text-6xl text-wrap;
+}
+
+.reset {
+    @apply flex uppercase font-bold cursor-pointer rounded-lg bg-slate-200 px-6 py-2;
+}
