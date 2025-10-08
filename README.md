@@ -1,17 +1,20 @@
-# Feliz Template
+# Fifteen Puzzle Game
 
-This template gets you up and running with a simple web app using [Fable](http://fable.io/) and [Feliz](https://github.com/Zaid-Ajaj/Feliz).
+Move tiles in grid to order them from 1 to 15
 
-## Requirements
+## Instruction
 
-* [dotnet SDK](https://www.microsoft.com/net/download/core) v7.0 or higher
-* [node.js](https://nodejs.org) v18+ LTS
+Move the tiles in the grid to arrange them in numerical order, from 1 to 15. To move a tile, click on it; only tiles immediately adjacent to the empty space can be moved.
 
+## Description 
 
-## Editor
+The 15-puzzle is a sliding puzzle that consists of a frame of numbered square tiles in random order with one tile missing.
 
-To write and edit your code, you can use either VS Code + [Ionide](http://ionide.io/), Emacs with [fsharp-mode](https://github.com/fsharp/emacs-fsharp-mode), [Rider](https://www.jetbrains.com/rider/) or Visual Studio.
+## Screenshot 
 
+<p align="center">
+  <img src="screen.png" alt="game screenshot"/>
+</p>
 
 ## Development
 
@@ -21,23 +24,10 @@ Then to start development mode with hot module reloading, run:
 ```bash
 npm start
 ```
-This will start the development server after compiling the project, once it is finished, navigate to http://localhost:8080 to view the application .
+This will start the development server after compiling the project.
 
 To build the application and make ready for production:
 ```
 npm run build
 ```
 This command builds the application and puts the generated files into the `deploy` directory (can be overwritten in webpack.config.js).
-
-### Tests
-
-The template includes a test project that ready to go which you can either run in the browser in watch mode or run in the console using node.js and mocha. To run the tests in watch mode:
-```
-npm run test:live
-```
-This command starts a development server for the test application and makes it available at http://localhost:8085.
-
-To run the tests using the command line and of course in your CI server, you have to use the mocha test runner which doesn't use the browser but instead runs the code using node.js:
-```
-npm test
-```

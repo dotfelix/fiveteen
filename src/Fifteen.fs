@@ -74,6 +74,21 @@ let Reset setAppState =
           prop.onClick (fun _ -> setAppState (fun _ -> initialState))
           prop.text "Reset" ]
 
+[<ReactComponent>]
+let Instruction keys =
+    Html.div
+        [ prop.className "text-wrap w-120 p-4"
+          prop.children
+              [ Html.h1 [ 
+                        prop.className "font-bold text-3xl uppercase" 
+                        prop.text "Instruction:" ]
+                Html.p
+                    [ 
+                        prop.className "font-medium text-2xl"
+                        prop.text """Move the tiles in the grid to arrange them in numerical order, 
+                                    from 1 to 15. To move a tile, click on it; only tiles immediately 
+                                    adjacent to the empty space can be moved..""" ] ] ]
+
 [<ReactComponent(true)>]
 let Game () =
     let appState, setAppState = React.useStateWithUpdater initialState
@@ -113,4 +128,5 @@ let Game () =
                                                       [ if appState.FreeSlot <> pos then
                                                             Tile title ] ]
 
-                                        ] ] ] ] ] ]
+                                        ] ] ] ]
+                Instruction "" ] ]
