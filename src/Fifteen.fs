@@ -22,11 +22,27 @@ let computeBounds row col =
 let freeSlot = rnd.Next(1, 16)
 
 [<ReactComponent>]
-let Tile number =
+let Tile number isClickable =
     Html.div [
-        prop.className "flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl font-bold text-4xl select-none"
+        prop.className "flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl font-bold text-4xl select-none drop-shadow-sm"
         prop.text (string number)
     ]
+
+[<ReactComponent>]
+let MovesPanel moves =
+    Html.div [
+        prop.className "flex flex-col items-center font-bold bg-blue-200 px-6 py-1 rounded-lg"
+        prop.children [
+            Html.div [
+                prop.className "uppercase"
+                prop.text "Moves"
+            ]
+            Html.div [
+                prop.className "text-2xl opacity-75"
+                prop.text (sprintf "%i" moves)
+            ]
+        ]
+    ]  
 
 let initialState  =
     let tags = [1 .. 16] |> List.sortBy (fun _ -> rnd.Next()) 
@@ -63,19 +79,7 @@ let Game () =
     Html.div [
         prop.className "flex flex-col h-screen w-full items-center justify-center"
         prop.children [
-            Html.div [
-                prop.className "flex flex-col items-center font-bold bg-blue-200 p-4 rounded-lg"
-                prop.children [
-                    Html.div [
-                        prop.className "uppercase text-2xl"
-                        prop.text "Moves"
-                    ]
-                    Html.div [
-                        prop.className "text-3xl"
-                        prop.text (sprintf "%i" appState.Moves)
-                    ]
-                ]
-            ]
+            MovesPanel appState.Moves
             Html.div [
                 prop.className "bg-[rgba(0,119,24,0.29)] flex p-6 rounded-lg m-4"
                 prop.children [  
@@ -97,7 +101,7 @@ let Game () =
                                         )
                                     prop.children [ 
                                         if appState.FreeSlot <> pos then
-                                            Tile title
+                                            Tile title isClickable
                                     ]
                                 ] 
                                 
