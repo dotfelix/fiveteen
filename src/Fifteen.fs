@@ -24,14 +24,14 @@ let freeSlot = rnd.Next(1, 16)
 [<ReactComponent>]
 let Tile number isClickable =
     Html.div [
-        prop.className "flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl font-bold text-4xl select-none drop-shadow-sm"
+        prop.className "flex bg-amber-200 items-center justify-center h-24 w-24 box-border rounded-xl font-bold text-4xl select-none "
         prop.text (string number)
     ]
 
 [<ReactComponent>]
 let MovesPanel moves =
     Html.div [
-        prop.className "flex flex-col items-center font-bold bg-blue-200 px-6 py-1 rounded-lg"
+        prop.className "flex flex-col items-center font-bold bg-blue-200 px-6 py-1 rounded-lg select-none"
         prop.children [
             Html.div [
                 prop.className "uppercase"
@@ -42,7 +42,14 @@ let MovesPanel moves =
                 prop.text (sprintf "%i" moves)
             ]
         ]
-    ]  
+    ] 
+
+[<ReactComponent>]
+let Title (title: string) = 
+    Html.div [
+        prop.className "w-80 font-bold text-6xl text-wrap"
+        prop.text title
+    ]
 
 let initialState  =
     let tags = [1 .. 16] |> List.sortBy (fun _ -> rnd.Next()) 
@@ -71,6 +78,16 @@ let slotSelected (oldState : AppState) (selectedSlot: Slot) =
         Moves = oldState.Moves + 1
         }
 
+
+[<ReactComponent>]
+let Reset setAppState = 
+    Html.div [
+        prop.className "flex uppercase font-bold cursor-pointer rounded-lg bg-slate-200 px-6 py-2"
+        prop.onClick (fun _ -> 
+            setAppState(fun _ -> initialState)
+        )
+        prop.text "Reset"
+    ]
     
 [<ReactComponent(true)>]
 let Game () =  
@@ -79,7 +96,17 @@ let Game () =
     Html.div [
         prop.className "flex flex-col h-screen w-full items-center justify-center"
         prop.children [
-            MovesPanel appState.Moves
+            Html.div [   
+                prop.className "flex gap-6" 
+                prop.children [
+                    Html.div [
+                        prop.className "flex flex-col items-center gap-4"
+                        prop.children [
+                            MovesPanel appState.Moves
+                            Reset setAppState
+                        ]
+                    ]
+                    Title "Fifteen Puzzle Game"]]
             Html.div [
                 prop.className "bg-[rgba(0,119,24,0.29)] flex p-6 rounded-lg m-4"
                 prop.children [  
